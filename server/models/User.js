@@ -22,7 +22,7 @@ const User = sequelize.define('User', {
     }
 }, {
     // Disable automatic timestamps for 'createdAt' and 'updatedAt'
-    timestamps: false // No need to automatically create timestamps for this model
+    timestamps: true // No need to automatically create timestamps for this model
 });
 
 // Export the User model to be used in other parts of the application
