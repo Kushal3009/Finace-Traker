@@ -16,7 +16,8 @@ const sequelize = new Sequelize(
     {
         port: 1434,
         host: 'localhost',
-        dialect: 'mssql'
+        dialect: 'mssql',
+        logging:false
     })
 
 // Function to test the connection
