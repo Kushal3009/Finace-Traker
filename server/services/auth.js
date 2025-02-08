@@ -25,7 +25,7 @@ export const signup = async (req, res) => {
         res.status(201).json({ status: '201', msg: "User created successfully" });
     } catch (error) {
         console.error('Signup Error:', error);
-        res.status(500).json({ status: '500', msg: "Failed to Create User" });
+        res.status(500).json({ status: '500', msg: "Failed to Create User", errors: error });
     }
 }
 
@@ -33,7 +33,6 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log(`Login Attempt: ${email}`);
 
         const user = await User.findOne({ where: { email } });
 
@@ -50,7 +49,6 @@ export const login = async (req, res) => {
 
         res.status(200).json({ status: '200', msg: "Login Successfully", token });
     } catch (error) {
-        console.error('Login Error:', error);
-        res.status(500).json({ status: '500', msg: "Failed to Login" });
+        res.status(500).json({ status: '500', msg: "Failed to Login", errors: error });
     }
 }

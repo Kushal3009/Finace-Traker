@@ -19,7 +19,15 @@ const User = sequelize.define('User', {
     password: {
         type: DataTypes.STRING, // Define the data type as STRING
         allowNull: false // Password cannot be null
-    }
+    },
+    otp: {
+        type: DataTypes.STRING, // Store OTP as string
+        allowNull: true,
+    },
+    otpExpiry: {
+        type: DataTypes.DATE, // Store expiry time
+        allowNull: true,
+    },
 }, {
     // Disable automatic timestamps for 'createdAt' and 'updatedAt'
     timestamps: true // No need to automatically create timestamps for this model
