@@ -5,6 +5,14 @@ import { connectDB } from './utils/dbConnection.js'; // Custom function to conne
 import { User } from './models/User.js'; // User model for database operations
 import user from './routes/auth.js'; // Authentication routes
 import { verifyUser } from './middlewares/verifyUser.js'; // Middleware to verify JWT tokens
+import { Category } from './models/Category.js';
+import { SubCategory } from './models/SubCategory.js'
+import { Transactions } from './models/Transactions.js';
+import category from './routes/categorys.js'
+import subcategory from './routes/subcategory.js'
+
+
+
 
 dotenv.config(); // Load environment variables
 
@@ -17,11 +25,17 @@ const startServer = async () => {
         await connectDB(); // Connect to the database
         // Sync the User model (commented out to prevent unintended schema changes)
         // User.sync({ alter: true });
+        // Category.sync({ alter: true })
+        // SubCategory.sync({ alter: true })
+        // Transactions.sync({ alter: true })
 
         app.use(express.json()); // Middleware to parse JSON request bodies
 
         // Route for authentication-related operations (e.g., signup, login)
         app.use('/api/auth', user);
+        app.use('/api/category', category);
+        app.use('/api/subcategory', subcategory);
+
 
         // Protected route that requires user verification
         app.get('/', verifyUser, (req, res) => {
@@ -39,4 +53,3 @@ const startServer = async () => {
 };
 
 startServer(); // Call the function to start the server
-    

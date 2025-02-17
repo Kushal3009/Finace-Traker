@@ -1,12 +1,10 @@
 // auth.js
 import express from 'express';
-import { login, signup } from '../services/auth.js';
+import { login, signup } from '../controller/auth.js';
 import { loginValidationRules, signupValidationRules } from '../validation/authValidation.js';
 import { validate } from '../middlewares/validationMiddleware.js';
 import { User } from '../models/User.js';
-import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-import { Op } from 'sequelize';
 import { sendEmail } from '../utils/sendEmail.js';
 import otpGenerator from 'otp-generator'
 
