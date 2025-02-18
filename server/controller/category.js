@@ -2,6 +2,18 @@ import { sequelize } from '../utils/dbConnection.js';
 import { Category } from '../models/Category.js';
 import { SubCategory } from '../models/SubCategory.js';
 
+
+Category.hasMany(SubCategory, {
+    foreignKey: 'category_id', // The foreign key in SubCategory
+    as: 'subcategories'        // The alias name for subcategories
+});
+
+SubCategory.belongsTo(Category, {
+    foreignKey: 'category_id', // The foreign key in SubCategory
+    as: 'category'             // The alias name for category
+});
+
+
 export const createCategory = async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
@@ -31,22 +43,17 @@ export const createMultipleCategory = async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
         const { categories } = req.body; // Expecting an array of category names
-
+        console.log(categories)
         if (!Array.isArray(categories) || categories.length === 0) {
             return res.status(400).json({ status: 400, msg: "Please provide an array of category names" });
         }
 
-        // ✅ Check if any category already exists
-        const existingCategories = await Category.findAll({
-            where: { category_name: categories }
-        });
+        const category_data = categories.map(cat => ({
+            category_name: cat,
+            status: true
+        }))
 
-        if (existingCategories.length > 0) {
-            return res.status(409).json({ status: 409, msg: "Some categories already exist", existingCategories });
-        }
-
-        const newCategories = categories.map(name => ({ category_name: name }));
-        await Category.bulkCreate(newCategories, { transaction });
+        await Category.bulkCreate(category_data, { transaction });
 
         await transaction.commit();
         res.status(201).json({ status: 201, msg: "Categories created successfully" });
@@ -107,17 +114,25 @@ export const deleteCategory = async (req, res) => {
     }
 }
 
-export const getCategory = async (req, res) => { // ✅ Fixed typo in route name
+export const getCategoriesWithSubcategories = async (req, res) => {
     try {
+        // Fetch categories along with their associated subcategories
         const categories = await Category.findAll({
-            include: {
+            include: [{
                 model: SubCategory,
-                as: 'subcategories' // ✅ Make sure alias matches model association
-            }
+                as: 'subcategories'  // This should match the alias set in `hasMany`
+            }]
         });
 
-        res.status(200).json({ status: 200, categories });
+        res.status(200).json({
+            status: 200,
+            categories: categories
+        });
     } catch (error) {
-        res.status(500).json({ status: 500, msg: "Error fetching categories", error });
+        res.status(500).json({
+            status: 500,
+            msg: "Error fetching categories and subcategories",
+            error: error.message
+        });
     }
-}
+};

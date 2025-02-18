@@ -2,30 +2,26 @@ import { sequelize } from '../utils/dbConnection.js';
 import { SubCategory } from '../models/SubCategory.js';
 
 
-export const createSubCategory = async (req, res) => {
+export const createMultipleSubCategories = async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
-        const { subcategory_name, category_id } = req.body;
-
-        if (!subcategory_name || !category_id) {
-            return res.status(400).json({ status: 400, msg: "Please provide Subcategory Name and Category ID" });
+        const { subcategories } = req.body; // Expecting an array of subcategory objects
+        if (!Array.isArray(subcategories) || subcategories.length === 0) {
+            return res.status(400).json({ status: 400, msg: "Please provide an array of subcategories" });
         }
 
-        // ✅ Check if subcategory already exists
-        const existingSubcategory = await SubCategory.findOne({ where: { subcategory_name } });
-        if (existingSubcategory) {
-            return res.status(409).json({ status: 409, msg: "Subcategory already exists" });
-        }
+        // Bulk create the subcategories
+        await SubCategory.bulkCreate(subcategories, { transaction });
 
-        const subcategory = await SubCategory.create({ subcategory_name, category_id }, { transaction });
         await transaction.commit();
-        res.status(201).json({ status: 201, msg: "Subcategory created successfully", subcategory });
+        res.status(201).json({ status: 201, msg: "Subcategories created successfully" });
 
     } catch (error) {
         await transaction.rollback();
-        res.status(500).json({ status: 500, msg: "Error creating subcategory", error });
+        res.status(500).json({ status: 500, msg: "Error creating subcategories", error });
     }
 }
+
 
 export const updateSubCategory = async (req, res) => {
     try {
